@@ -82,10 +82,22 @@ def obtener_ultimos_sorteos():
 def cargar_sorteos_existentes():
     fechas_existentes = set()
     if os.path.exists(CSV_PATH):
-        with open(CSV_PATH, 'r', encoding='utf-8') as f:
+        # Abrir con encoding utf-8-sig para manejar BOM
+        with open(CSV_PATH, 'r', encoding='utf-8-sig') as f:
             lector = csv.DictReader(f, delimiter=';')
-            for fila in lector:
-                fechas_existentes.add(fila['fecha'])
+            
+            # Debug: mostrar los nombres de columna que encuentra
+            print(f"📋 Columnas encontradas: {lector.fieldnames}")
+            
+            for i, fila in enumerate(lector):
+                # Debug: mostrar la primera fila
+                if i == 0:
+                    print(f" Primera fila: {fila}")
+                
+                # Intentar con diferentes nombres posibles
+                fecha = fila.get('fecha', fila.get(' fecha', ''))
+                if fecha:
+                    fechas_existentes.add(fecha.strip())
     return fechas_existentes
 
 def agregar_nuevos_sorteos(sorteos_nuevos):
@@ -96,7 +108,7 @@ def agregar_nuevos_sorteos(sorteos_nuevos):
     
     archivo_existe = os.path.exists(CSV_PATH)
     
-    with open(CSV_PATH, 'a', encoding='utf-8', newline='') as f:
+    with open(CSV_PATH, 'a', encoding='utf-8-sig', newline='') as f:
         campos = ['fecha', 'sorteo', 'era', 'formato', 
                   'n1', 'n2', 'n3', 'n4', 'n5', 'n6',
                   'superbalota', 'rev1', 'rev2', 'rev3', 
