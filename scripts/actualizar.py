@@ -60,11 +60,10 @@ def obtener_ultimos_sorteos():
         return []
 
 def cargar_sorteos_existentes():
-    """Lee el CSV actual y devuelve un set de fechas ya registradas"""
     fechas_existentes = set()
     if os.path.exists(CSV_PATH):
         with open(CSV_PATH, 'r', encoding='utf-8') as f:
-            lector = csv.DictReader(f, delimiter=';')
+            lector = csv.DictReader(f, delimiter=';')  # ✅ Agregado delimiter
             for fila in lector:
                 fechas_existentes.add(fila['fecha'])
     return fechas_existentes
