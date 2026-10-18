@@ -6,6 +6,10 @@ on:
     - cron: '0 4 * * 4,0'
   workflow_dispatch:
 
+# ✅ ESTA SECCIÓN ES LA QUE FALTABA: da permiso de escritura al robot
+permissions:
+  contents: write
+
 jobs:
   actualizar:
     runs-on: ubuntu-latest
@@ -13,7 +17,10 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
-        
+        with:
+          # ✅ Importante: mantener el token para poder hacer push después
+          persist-credentials: true
+          
       - name: Instalar Python
         uses: actions/setup-python@v5
         with:
