@@ -1,0 +1,43 @@
+name: Actualizar datos Baloto
+
+# ¿Cuándo se activa el robot?
+on:
+  schedule:
+    # Miércoles y sábados a las 4:00 AM hora de Colombia (9:00 PM UTC)
+    - cron: '0 21 * * 3,6'
+  # También puedes activarlo manualmente desde GitHub
+  workflow_dispatch:
+
+# ¿Qué hace el robot?
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest  # Usa una computadora virtual de Linux
+    
+    steps:
+      # 1. Descarga tu repositorio
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        
+      # 2. Instala Python
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      # 3. Instala las librerías que necesita tu script
+      - name: Instalar dependencias
+        run: |
+          pip install requests beautifulsoup4 pandas
+          
+      # 4. Ejecuta tu script
+      - name: Ejecutar script de actualización
+        run: python scripts/actualizar.py
+        
+      # 5. Guarda los cambios si hubo nuevos datos
+      - name: Guardar cambios
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "bot@baloto-datos.com"
+          git add datos/baloto_era_actual.csv
+          git diff --quiet && git diff --staged --quiet || git commit -m "📊 Actualización automática $(date)"
+          git push
