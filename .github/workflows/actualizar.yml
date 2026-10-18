@@ -2,11 +2,12 @@ name: Actualizar datos Baloto
 
 on:
   schedule:
-    # Miércoles y sábados a las 11:00 PM hora Colombia (4:00 AM UTC del día siguiente)
-    - cron: '0 4 * * 4,0'
-  workflow_dispatch:
+    # Lunes (1), Miércoles (3) y Sábado (6) a las 04:15 AM UTC 
+    # (Equivalente a 11:15 PM hora Colombia, 15 min después del sorteo)
+    - cron: '45 4 * * 1,3,6'
+  workflow_dispatch: # Permite ejecutarlo manualmente si es necesario
 
-# ✅ ESTA SECCIÓN ES LA QUE FALTABA: da permiso de escritura al robot
+# Dar permiso de escritura al robot para hacer push de los cambios
 permissions:
   contents: write
 
@@ -18,8 +19,7 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
-          # ✅ Importante: mantener el token para poder hacer push después
-          persist-credentials: true
+          persist-credentials: true # Mantiene el token para poder hacer push
           
       - name: Instalar Python
         uses: actions/setup-python@v5
@@ -38,5 +38,6 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "bot@baloto-datos.com"
           git add baloto_era_actual.csv
+          # Solo hace commit si hay cambios reales en el archivo
           git diff --quiet && git diff --staged --quiet || git commit -m "📊 Actualización automática $(date)"
           git push
